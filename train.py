@@ -151,10 +151,10 @@ def main():
     decoder = Decoder(n_vocab, n_embed, n_hidden).cuda()
 
     if torch.cuda.device_count() > 1:
-        encoder = torch.nn.DataParallel(encoder)
-        Kencoder = torch.nn.DataParallel(Kencoder)
-        manager = torch.nn.DataParallel(manager)
-        decoder = torch.nn.DataParallel(decoder)
+        encoder = nn.DataParallel(encoder)
+        Kencoder = nn.DataParallel(Kencoder)
+        manager = nn.DataParallel(manager)
+        decoder = nn.DataParallel(decoder)
 
     if args.restore:
         encoder = init_model(encoder, restore=params.encoder_restore)
