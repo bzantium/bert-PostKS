@@ -178,13 +178,13 @@ def knowledgeToIndex(K):
     k1, k2, k3 = K
 
     tokens = tokenizer.tokenize(k1)
-    K1 = tokenizer.tokenize(tokens)
+    K1 = tokenizer.convert_tokens_to_ids(tokens)
 
     tokens = tokenizer.tokenize(k2)
-    K2 = tokenizer.tokenize(tokens)
+    K2 = tokenizer.convert_tokens_to_ids(tokens)
 
-    tokens = tokenizer.tokenize(k2)
-    K3 = tokenizer.tokenize(tokens)
+    tokens = tokenizer.tokenize(k3)
+    K3 = tokenizer.convert_tokens_to_ids(tokens)
 
     K = [K1, K2, K3]
     seq_len = max([len(k) for k in K]) + 2
