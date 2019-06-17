@@ -15,7 +15,8 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.encoder = deepcopy(model)
 
-    def forward(self, X, mask=None):
+    def forward(self, X):
+        mask = (X != 0).long()
         outputs, hidden = self.encoder(X, attention_mask=mask, output_all_encoded_layers=False)
         return outputs, hidden  # outputs: [n_batch, seq_len, n_hidden], # hidden: [n_batch, n_hidden]
 
@@ -26,19 +27,21 @@ class KnowledgeEncoder(nn.Module):
         self.n_hidden = n_hidden
         self.encoder = deepcopy(model)
 
-    def forward(self, K, mask=None):
+    def forward(self, K):
         if len(K.shape) == 3:  # [n_batch, N, seq_len]
             n_batch = K.size(0)
             N = K.size(1)
             K = K.transpose(0, 1)  # [N, n_batch, seq_len]
             encoded = torch.zeros(N, n_batch, self.n_hidden)
             for i in range(N):
+                mask = (K[i] != 0).long()
                 _, hidden = self.encoder(K[i], attention_mask=mask, output_all_encoded_layers=False)
                 encoded[i] = hidden
             return encoded.transpose(0, 1).cuda()  # [n_batch, N, n_hidden]
 
         else:  # [n_batch, seq_len]
             y = K
+            mask = (y != 0).long()
             _, encoded = self.encoder(y, attention_mask=mask, output_all_encoded_layers=False)
             return encoded
 
@@ -94,6 +97,8 @@ class Attention(nn.Module):
     def forward(self, hidden, encoder_outputs):  # hidden: [n_batch, n_hidden]
         seq_len = encoder_outputs.size(1)  # encoder_outputs: [n_batch, seq_len, n_hidden]
         h = hidden.repeat(seq_len, 1, 1).transpose(0, 1)  # [n_batch, seq_len, n_hidden]
+        print(h.shape)
+        print(encoder_outputs.shape)
         attn_weights = self.score(h, encoder_outputs)  # [n_batch, 1, seq_len]
         return attn_weights
 
@@ -137,7 +142,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         '''
         embedded = self.embedding(input).unsqueeze(0)  # [1, n_batch, n_hidden]
         attn_weights = self.attention(hidden, encoder_outputs)  # [n_batch, 1, seq_len]
-        context = torch.bmm(attn_weights, encoder_outputs.transpose(0, 1))  # [n_batch, 1, n_hidden]
+        context = torch.bmm(attn_weights, encoder_outputs)  # [n_batch, 1, n_hidden]
         context = context.transpose(0, 1)  # [1, n_batch, n_hidden]
         y_input = torch.cat((embedded, context), dim=-1)
         k_input = torch.cat((k.unsqueeze(0), context), dim=-1)
