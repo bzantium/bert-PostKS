@@ -8,7 +8,7 @@ from model import Encoder, KnowledgeEncoder, Decoder, Manager
 
 def parse_arguments():
     p = argparse.ArgumentParser(description='Hyperparams')
-    p.add_argument('-n_batch', type=int, default=128,
+    p.add_argument('-n_batch', type=int, default=32,
                    help='number of epochs for train')
     return p.parse_args()
 
