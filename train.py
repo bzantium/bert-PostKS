@@ -44,7 +44,7 @@ def pre_train(model, optimizer, train_loader, args):
             src_K = src_K.cuda()
 
             optimizer.zero_grad()
-            _, _, x = encoder(src_X)
+            _, x = encoder(src_X)
             n_batch = src_y.size(0)
             CLS_tokens = torch.LongTensor([101] * n_batch).unsqueeze(1).cuda()
             src_y = torch.cat((CLS_tokens, src_y[:, 1:]), dim=-1)
@@ -82,14 +82,14 @@ def train(model, optimizer, train_loader, args):
 
             optimizer.zero_grad()
             encoder_outputs, hidden = encoder(src_X)
+            x = hidden
             y = Kencoder(src_y)
             K = Kencoder(src_K)
-            prior, posterior, k_i, k_logits = manager(hidden, y, K)
+            prior, posterior, k_i, k_logits = manager(x, y, K)
             kldiv_loss = KLDLoss(prior, posterior.detach())
 
             n_vocab = decoder.n_vocab
             seq_len = src_y.size(1) - 1
-            _, _, _, k_logits = manager(x, y, K)  # k_logits: [n_batch, n_vocab]
             k_logits = k_logits.repeat(seq_len, 1, 1).transpose(0, 1).contiguous().view(-1, n_vocab)
             bow_loss = NLLLoss(k_logits, src_y[:, 1:].contiguous().view(-1))
 
@@ -130,7 +130,7 @@ def main():
     n_hidden = params.n_hidden
     n_batch = args.n_batch
     temperature = params.temperature
-    train_path = params.train_path
+    train_path = params.test_path
     assert torch.cuda.is_available()
 
     print("loading_data...")

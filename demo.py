@@ -71,7 +71,7 @@ def main():
             for idx in outputs:
                 if idx == params.EOS:
                     break
-                answer += vocab.itos[idx] + " "
+                answer += tokenizer.convert_ids_to_tokens([idx])[0] + " "
 
             print("bot:", answer[:-1], "\n")
 
