@@ -68,7 +68,7 @@ def main():
                 idx = idx.item()
                 if idx == params.EOS:
                     break
-                tokens += tokenizer.convert_ids_to_tokens([idx])[0]
+                tokens.append(tokenizer.convert_ids_to_tokens([idx])[0])
 
             text = ' '.join([x for x in tokens])
             answer = text.replace(' ##', '')
