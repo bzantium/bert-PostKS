@@ -1,8 +1,5 @@
-import os
-import json
 import torch
 import params
-import nltk
 from utils import init_model, knowledgeToIndex
 from pytorch_pretrained_bert import BertTokenizer
 from model import Encoder, KnowledgeEncoder, Decoder, Manager
@@ -65,13 +62,15 @@ def main():
 
             outputs = outputs.max(2)[1]
 
-            answer = ""
+            tokens = []
             for idx in outputs:
                 if idx == params.EOS:
                     break
-                answer += tokenizer.convert_ids_to_tokens([idx])[0] + " "
+                tokens += tokenizer.convert_ids_to_tokens([idx])[0]
 
-            print("bot:", answer[:-1], "\n")
+            text = ' '.join([x for x in tokens])
+            answer = text.replace(' ##', '')
+            print("bot:", answer, "\n")
 
 
 if __name__ == "__main__":

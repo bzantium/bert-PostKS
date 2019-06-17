@@ -1,6 +1,5 @@
 import random
 import argparse
-import json
 import torch
 from torch import optim
 import torch.nn as nn
@@ -17,7 +16,7 @@ def parse_arguments():
                    help='number of epochs for pre_train')
     p.add_argument('-n_epoch', type=int, default=15,
                    help='number of epochs for train')
-    p.add_argument('-n_batch', type=int, default=128,
+    p.add_argument('-n_batch', type=int, default=32,
                    help='number of batches for train')
     p.add_argument('-lr', type=float, default=5e-4,
                    help='initial learning rate')
