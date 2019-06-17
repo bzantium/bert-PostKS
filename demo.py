@@ -65,6 +65,7 @@ def main():
 
             tokens = []
             for idx in outputs:
+                idx = idx.item()
                 if idx == params.EOS:
                     break
                 tokens += tokenizer.convert_ids_to_tokens([idx])[0]
