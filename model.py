@@ -144,13 +144,13 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         y_input = torch.cat((embedded, context), dim=-1)
         k_input = torch.cat((k.unsqueeze(0), context), dim=-1)
         hidden = hidden.unsqueeze(0)
-        y_output, y_hidden = self.y_gru(y_input, hidden)  # y_hidden: [n_batch, n_hidden]
-        k_output, k_hidden = self.k_gru(k_input, hidden)  # k_hidden: [n_batch, n_hidden]
+        y_output, y_hidden = self.y_gru(y_input, hidden)  # y_hidden: [1, n_batch, n_hidden]
+        k_output, k_hidden = self.k_gru(k_input, hidden)  # k_hidden: [1, n_batch, n_hidden]
         t_hidden = torch.tanh(torch.cat((self.y_weight(y_hidden), self.k_weight(k_hidden)), dim=-1))
         # t_hidden: [n_batch, 2*n_hidden]
-        r = torch.sigmoid(self.z_weight(t_hidden))  # [n_batch, n_hidden]
-        hidden = torch.mul(r, y_hidden) + torch.mul(1-r, k_hidden) # [n_batch, n_hidden]
-        output = hidden  # [n_batch, n_hidden]
+        r = torch.sigmoid(self.z_weight(t_hidden))  # [1, n_batch, n_hidden]
+        hidden = torch.mul(r, y_hidden) + torch.mul(1-r, k_hidden) # [1, n_batch, n_hidden]
+        output = hidden[-1]  # [n_batch, n_hidden]
         context = context.squeeze(0)  # [n_batch, n_hidden]
         output = self.out(torch.cat((output, context), dim=1))  # [n_batch, n_vocab]
         output = F.log_softmax(output, dim=1)
