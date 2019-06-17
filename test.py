@@ -34,6 +34,7 @@ def evaluate(model, test_loader):
 
         outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
         output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]
+        hidden = hidden.unsqueeze(0)
         for t in range(max_len):
             output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
             outputs[t] = output
