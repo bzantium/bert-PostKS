@@ -40,7 +40,7 @@ def main():
         k3 = input("Type third Knowledge: ").lower()
 
         K = [k1, k2, k3]
-        K = knowledgeToIndex(K, vocab)
+        K = knowledgeToIndex(K)
         K = Kencoder(K)
         print()
 
@@ -54,8 +54,8 @@ def main():
             seqs = tokenizer.convert_tokens_to_ids(tokens)
             X = torch.LongTensor(seqs).unsqueeze(0).cuda()  # X: [1, x_seq_len]
 
-            encoder_outputs, hidden, x = encoder(X)
-            k_i = manager(x, None, K)
+            encoder_outputs, hidden = encoder(X)
+            k_i = manager(hidden, None, K)
             outputs = torch.zeros(max_len, 1, n_vocab).cuda()  # outputs: [max_len, 1, n_vocab]
             hidden = hidden[decoder.n_layer:]
             output = torch.LongTensor([params.SOS]).cuda()

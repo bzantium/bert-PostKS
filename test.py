@@ -26,9 +26,9 @@ def evaluate(model, test_loader):
         src_K = src_K.cuda()
         tgt_y = tgt_y.cuda()
 
-        encoder_outputs, hidden, x = encoder(src_X)
+        encoder_outputs, hidden = encoder(src_X)
         K = Kencoder(src_K)
-        k_i = manager(x, None, K)
+        k_i = manager(hidden, None, K)
         n_batch = src_X.size(0)
         max_len = tgt_y.size(1)
         n_vocab = decoder.n_vocab
@@ -54,7 +54,6 @@ def main():
     n_vocab = params.n_vocab
     n_layer = params.n_layer
     n_hidden = params.n_hidden
-    n_embed = params.n_embed
     n_batch = args.n_batch
     temperature = params.temperature
     test_path = params.test_path

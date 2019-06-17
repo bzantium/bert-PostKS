@@ -81,10 +81,10 @@ def train(model, optimizer, train_loader, args):
             tgt_y = tgt_y.cuda()
 
             optimizer.zero_grad()
-            encoder_outputs, hidden, x = encoder(src_X)
+            encoder_outputs, hidden = encoder(src_X)
             y = Kencoder(src_y)
             K = Kencoder(src_K)
-            prior, posterior, k_i, k_logits = manager(x, y, K)
+            prior, posterior, k_i, k_logits = manager(hidden, y, K)
             kldiv_loss = KLDLoss(prior, posterior.detach())
 
             n_vocab = decoder.n_vocab
