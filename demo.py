@@ -57,7 +57,6 @@ def main():
             encoder_outputs, hidden = encoder(X)
             k_i = manager(hidden, None, K)
             outputs = torch.zeros(max_len, 1, n_vocab).cuda()  # outputs: [max_len, 1, n_vocab]
-            hidden = hidden[decoder.n_layer:]
             output = torch.LongTensor([params.SOS]).cuda()
 
             for t in range(max_len):

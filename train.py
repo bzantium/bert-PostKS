@@ -81,8 +81,8 @@ def train(model, optimizer, train_loader, args):
             tgt_y = tgt_y.cuda()
 
             optimizer.zero_grad()
+            print(src_X)
             encoder_outputs, hidden = encoder(src_X)
-            print(encoder_outputs.shape)
             x = hidden
             y = Kencoder(src_y)
             K = Kencoder(src_K)
@@ -98,7 +98,6 @@ def train(model, optimizer, train_loader, args):
             max_len = tgt_y.size(1)
 
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
-            hidden = hidden[decoder.n_layer:]
             output = src_y[:, 0]  # [n_batch]
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
