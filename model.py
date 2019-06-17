@@ -110,19 +110,18 @@ class Attention(nn.Module):
 
 
 class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
-    def __init__(self, n_vocab, n_embed, n_hidden, n_layer):
+    def __init__(self, n_vocab, n_embed, n_hidden):
         super(Decoder, self).__init__()
         self.n_vocab = n_vocab
         self.n_embed = n_embed
         self.n_hidden = n_hidden
-        self.n_layer = n_layer
         self.embedding = nn.Embedding(n_vocab, n_embed)
         self.attention = Attention(n_hidden)
         self.y_weight = nn.Linear(n_hidden, n_hidden)
         self.k_weight = nn.Linear(n_hidden, n_hidden)
         self.z_weight = nn.Linear(2 * n_hidden, n_hidden)
-        self.y_gru = nn.GRU(n_embed + n_hidden, n_hidden, n_layer)
-        self.k_gru = nn.GRU(2 * n_hidden, n_hidden, n_layer)
+        self.y_gru = nn.GRU(n_embed + n_hidden, n_hidden)
+        self.k_gru = nn.GRU(2 * n_hidden, n_hidden)
         self.out = nn.Linear(2 * n_hidden, n_vocab)
 
     def forward(self, input, k, hidden, encoder_outputs):
@@ -144,12 +143,12 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         context = context.transpose(0, 1)  # [1, n_batch, n_hidden]
         y_input = torch.cat((embedded, context), dim=-1)
         k_input = torch.cat((k.unsqueeze(0), context), dim=-1)
-        y_output, y_hidden = self.y_gru(y_input, hidden)  # y_hidden: [n_layer, n_batch, n_hidden]
-        k_output, k_hidden = self.k_gru(k_input, hidden)  # k_hidden: [n_layer, n_batch, n_hidden]
+        y_output, y_hidden = self.y_gru(y_input, hidden)  # y_hidden: [n_batch, n_hidden]
+        k_output, k_hidden = self.k_gru(k_input, hidden)  # k_hidden: [n_batch, n_hidden]
         t_hidden = torch.tanh(torch.cat((self.y_weight(y_hidden), self.k_weight(k_hidden)), dim=-1))
-        # t_hidden: [n_layer, n_batch, 2*n_hidden]
-        r = torch.sigmoid(self.z_weight(t_hidden))  # [n_layer, n_batch, n_hidden]
-        hidden = torch.mul(r, y_hidden) + torch.mul(1-r, k_hidden) # [n_layer, n_batch, n_hidden]
+        # t_hidden: [n_batch, 2*n_hidden]
+        r = torch.sigmoid(self.z_weight(t_hidden))  # [n_batch, n_hidden]
+        hidden = torch.mul(r, y_hidden) + torch.mul(1-r, k_hidden) # [n_batch, n_hidden]
         output = hidden[-1]  # [n_batch, n_hidden]
         context = context.squeeze(0)  # [n_batch, n_hidden]
         output = self.out(torch.cat((output, context), dim=1))  # [n_batch, n_vocab]
