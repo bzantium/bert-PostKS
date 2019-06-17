@@ -103,7 +103,7 @@ def train(model, optimizer, train_loader, args):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
                 outputs[t] = output
                 is_teacher = random.random() < args.tfr  # teacher forcing ratio
-                top1 = output.data.max(1)[1]
+                top1 = torch.LongTensor(output.data.max(1)[1]).cuda()
                 output = tgt_y[:, t] if is_teacher else top1
 
             outputs = outputs.transpose(0, 1).contiguous()
