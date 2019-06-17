@@ -83,21 +83,24 @@ def train(model, optimizer, train_loader, args):
             optimizer.zero_grad()
             encoder_outputs, hidden = encoder(src_X)
             x = hidden
+			
+            n_batch = src_X.size(0)
+            max_len = tgt_y.size(1)
+            n_vocab = decoder.n_vocab
+			
             CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
             SEP_tokens = torch.LongTensor([params.SEP] * n_batch).unsqueeze(1).cuda()
             src_y_ = torch.cat((CLS_tokens, src_y[:, 1:], SEP_tokens), dim=-1)
+			
             y = Kencoder(src_y_)
             K = Kencoder(src_K)
             prior, posterior, k_i, k_logits = manager(x, y, K)
             kldiv_loss = KLDLoss(prior, posterior.detach())
 
-            n_vocab = decoder.n_vocab
             seq_len = src_y.size(1) - 1
             k_logits = k_logits.repeat(seq_len, 1, 1).transpose(0, 1).contiguous().view(-1, n_vocab)
             bow_loss = NLLLoss(k_logits, src_y[:, 1:].contiguous().view(-1))
 
-            n_batch = src_X.size(0)
-            max_len = tgt_y.size(1)
 
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
             output = src_y[:, 0]  # [n_batch]
