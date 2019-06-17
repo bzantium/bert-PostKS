@@ -21,8 +21,9 @@ class Encoder(nn.Module):
 
 
 class KnowledgeEncoder(nn.Module):
-    def __init__(self):
+    def __init__(self, n_hidden):
         super(KnowledgeEncoder, self).__init__()
+        self.n_hidden = n_hidden
         self.encoder = deepcopy(model)
 
     def forward(self, K, mask=None):

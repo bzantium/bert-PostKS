@@ -21,7 +21,7 @@ def main():
 
     print("loading model...")
     encoder = Encoder().cuda()
-    Kencoder = KnowledgeEncoder().cuda()
+    Kencoder = KnowledgeEncoder(n_hidden).cuda()
     manager = Manager(n_hidden, n_vocab, temperature).cuda()
     decoder = Decoder(n_vocab, n_hidden, n_layer).cuda()
 
