@@ -102,10 +102,9 @@ def train(model, optimizer, train_loader, args):
             k_logits = k_logits.repeat(seq_len, 1, 1).transpose(0, 1).contiguous().view(-1, n_vocab)
             bow_loss = NLLLoss(k_logits, src_y[:, 1:].contiguous().view(-1))
 
-
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
             output = src_y[:, 0]  # [n_batch]
-			output = torch.cat((CLS_tokens, output.unsqueeze(1)), dim=-1)
+            output = torch.cat((CLS_tokens, output.unsqueeze(1)), dim=-1)
 			hidden = hidden.unsqueeze(0)
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
