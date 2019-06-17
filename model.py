@@ -143,7 +143,6 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         context = context.transpose(0, 1)  # [1, n_batch, n_hidden]
         y_input = torch.cat((embedded, context), dim=-1)
         k_input = torch.cat((k.unsqueeze(0), context), dim=-1)
-        hidden = hidden.unsqueeze(0)
         y_output, y_hidden = self.y_gru(y_input, hidden)  # y_hidden: [1, n_batch, n_hidden]
         k_output, k_hidden = self.k_gru(k_input, hidden)  # k_hidden: [1, n_batch, n_hidden]
         t_hidden = torch.tanh(torch.cat((self.y_weight(y_hidden), self.k_weight(k_hidden)), dim=-1))
