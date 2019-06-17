@@ -133,8 +133,8 @@ class PersonaDataset(Dataset):
         tgt_y = list()
 
         for tokens in X:
-            tokens.insert(0, 101)
-            tokens.append(102)
+            tokens.insert(0, params.CLS)
+            tokens.append(params.SEP)
             tokens.extend([params.PAD] * (X_len - len(tokens)))
             src_X.append(tokens)
 
@@ -151,8 +151,8 @@ class PersonaDataset(Dataset):
         for N_tokens in K:
             src_k = list()
             for tokens in N_tokens:
-                tokens.insert(0, 101)
-                tokens.append(102)
+                tokens.insert(0, params.CLS)
+                tokens.append(params.SEP)
                 tokens.extend([params.PAD] * (k_len - len(tokens)))
                 src_k.append(tokens)
             src_K.append(src_k)
@@ -189,16 +189,16 @@ def knowledgeToIndex(K):
     K = [K1, K2, K3]
     seq_len = max([len(k) for k in K]) + 2
 
-    K1.insert(0, 101)
-    K1.append(102)
-    K2.insert(0, 101)
-    K2.append(102)
-    K3.insert(0, 101)
-    K3.append(102)
+    K1.insert(0, params.CLS)
+    K1.append(params.SEP)
+    K2.insert(0, params.CLS)
+    K2.append(params.SEP)
+    K3.insert(0, params.CLS)
+    K3.append(params.SEP)
 
-    K1.extend([0] * (seq_len - len(K1)))
-    K2.extend([0] * (seq_len - len(K2)))
-    K3.extend([0] * (seq_len - len(K3)))
+    K1.extend([params.PAD] * (seq_len - len(K1)))
+    K2.extend([params.PAD] * (seq_len - len(K2)))
+    K3.extend([params.PAD] * (seq_len - len(K3)))
 
     K1 = torch.LongTensor(K1).unsqueeze(0)
     K2 = torch.LongTensor(K2).unsqueeze(0)

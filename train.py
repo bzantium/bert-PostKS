@@ -45,9 +45,9 @@ def pre_train(model, optimizer, train_loader, args):
             optimizer.zero_grad()
             _, x = encoder(src_X)
             n_batch = src_y.size(0)
-            CLS_tokens = torch.LongTensor([101] * n_batch).unsqueeze(1).cuda()
-            src_y = torch.cat((CLS_tokens, src_y[:, 1:]), dim=-1)
-            y = Kencoder(src_y)
+            CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
+            src_y_ = torch.cat((CLS_tokens, src_y[:, 1:]), dim=-1)
+            y = Kencoder(src_y_)
             K = Kencoder(src_K)
 
             n_vocab = decoder.n_vocab
@@ -82,7 +82,9 @@ def train(model, optimizer, train_loader, args):
             optimizer.zero_grad()
             encoder_outputs, hidden = encoder(src_X)
             x = hidden
-            y = Kencoder(src_y)
+            CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
+            src_y_ = torch.cat((CLS_tokens, src_y[:, 1:]), dim=-1)
+            y = Kencoder(src_y_)
             K = Kencoder(src_K)
             prior, posterior, k_i, k_logits = manager(x, y, K)
             kldiv_loss = KLDLoss(prior, posterior.detach())

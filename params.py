@@ -2,6 +2,8 @@ PAD = 0
 UNK = 1
 SOS = 2
 EOS = 3
+CLS = 101
+SEP = 102
 
 n_vocab = 30522
 n_embed = 768
