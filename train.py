@@ -82,6 +82,7 @@ def train(model, optimizer, train_loader, args):
 
             optimizer.zero_grad()
             encoder_outputs, hidden = encoder(src_X)
+            print(encoder_outputs.shape)
             x = hidden
             y = Kencoder(src_y)
             K = Kencoder(src_K)

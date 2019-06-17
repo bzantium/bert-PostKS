@@ -97,8 +97,6 @@ class Attention(nn.Module):
     def forward(self, hidden, encoder_outputs):  # hidden: [n_batch, n_hidden]
         seq_len = encoder_outputs.size(1)  # encoder_outputs: [n_batch, seq_len, n_hidden]
         h = hidden.repeat(seq_len, 1, 1).transpose(0, 1)  # [n_batch, seq_len, n_hidden]
-        print(h.shape)
-        print(encoder_outputs.shape)
         attn_weights = self.score(h, encoder_outputs)  # [n_batch, 1, seq_len]
         return attn_weights
 
