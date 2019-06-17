@@ -45,13 +45,14 @@ def pre_train(model, optimizer, train_loader, args):
             optimizer.zero_grad()
             _, x = encoder(src_X)
             n_batch = src_y.size(0)
+            n_vocab = decoder.n_vocab
+			
             CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
             SEP_tokens = torch.LongTensor([params.SEP] * n_batch).unsqueeze(1).cuda()
             src_y_ = torch.cat((CLS_tokens, src_y[:, 1:], SEP_tokens), dim=-1)
             y = Kencoder(src_y_)
             K = Kencoder(src_K)
 
-            n_vocab = decoder.n_vocab
             seq_len = src_y.size(1) - 1
             _, _, _, k_logits = manager(x, y, K) # k_logits: [n_batch, n_vocab]
             k_logits = k_logits.repeat(seq_len, 1, 1).transpose(0, 1).contiguous().view(-1, n_vocab)
@@ -104,6 +105,7 @@ def train(model, optimizer, train_loader, args):
 
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
             output = src_y[:, 0]  # [n_batch]
+			output = torch.cat((CLS_tokens, output.unsqueeze(1)), dim=-1)
             hidden = hidden.unsqueeze(0)
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
@@ -111,6 +113,7 @@ def train(model, optimizer, train_loader, args):
                 is_teacher = random.random() < args.tfr  # teacher forcing ratio
                 top1 = output.data.max(1)[1]
                 output = tgt_y[:, t] if is_teacher else top1
+				output = torch.cat((CLS_tokens, output.unsqueeze(1)), dim=-1)
 
             outputs = outputs.transpose(0, 1).contiguous()
             nll_loss = NLLLoss(outputs.view(-1, n_vocab),

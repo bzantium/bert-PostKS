@@ -115,7 +115,8 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         self.n_vocab = n_vocab
         self.n_embed = n_embed
         self.n_hidden = n_hidden
-        self.embedding = nn.Embedding(n_vocab, n_embed)
+        # self.embedding = nn.Embedding(n_vocab, n_embed)
+		self.embedding = deepcopy(model)
         self.attention = Attention(n_hidden)
         self.y_weight = nn.Linear(n_hidden, n_hidden)
         self.k_weight = nn.Linear(n_hidden, n_hidden)
@@ -137,7 +138,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         :return:
             decoder output, next hidden state of the decoder, attention weights
         '''
-        embedded = self.embedding(input).unsqueeze(0)  # [1, n_batch, n_hidden]
+        _, embedded = self.embedding(input).unsqueeze(0)  # [1, n_batch, n_hidden]
         attn_weights = self.attention(hidden, encoder_outputs)  # [n_batch, 1, seq_len]
         context = torch.bmm(attn_weights, encoder_outputs)  # [n_batch, 1, n_hidden]
         context = context.transpose(0, 1)  # [1, n_batch, n_hidden]
