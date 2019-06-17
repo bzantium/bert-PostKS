@@ -108,6 +108,9 @@ class Attention(nn.Module):
 class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
     def __init__(self, n_vocab, n_hidden, n_layer):
         super(Decoder, self).__init__()
+        self.n_vocab = n_vocab
+        self.n_hidden = n_hidden
+        self.n_layer = n_layer
         self.encoder = deepcopy(model)
         self.attention = Attention(n_hidden)
         self.y_weight = nn.Linear(n_hidden, n_hidden)
