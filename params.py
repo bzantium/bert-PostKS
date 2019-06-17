@@ -4,6 +4,7 @@ SOS = 2
 EOS = 3
 
 n_vocab = 30522
+n_embed = 768
 n_hidden = 768
 n_layer = 2
 temperature = 0.8
