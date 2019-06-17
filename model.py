@@ -31,7 +31,7 @@ class KnowledgeEncoder(nn.Module):
             n_batch = K.size(0)
             N = K.size(1)
             K = K.transpose(0, 1)  # [N, n_batch, seq_len]
-            encoded = torch.zeros(N, n_batch, 2*self.n_hidden)
+            encoded = torch.zeros(N, n_batch, self.n_hidden)
             for i in range(N):
                 _, hidden = self.encoder(K[i], attention_mask=mask, output_all_encoded_layers=False)
                 encoded[i] = hidden
