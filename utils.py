@@ -174,32 +174,17 @@ class PersonaDataset(Dataset):
         return self.dataset_size
 
 
-def knowledgeToIndex(K, vocab):
+def knowledgeToIndex(K):
     k1, k2, k3 = K
-    K1 = []
-    K2 = []
-    K3 = []
 
     tokens = tokenizer.tokenize(k1)
-    for word in tokens:
-        if word in vocab.stoi:
-            K1.append(vocab.stoi[word])
-        else:
-            K1.append(vocab.stoi["<UNK>"])
+    K1 = tokenizer.tokenize(tokens)
 
     tokens = tokenizer.tokenize(k2)
-    for word in tokens:
-        if word in vocab.stoi:
-            K2.append(vocab.stoi[word])
-        else:
-            K2.append(vocab.stoi["<UNK>"])
+    K2 = tokenizer.tokenize(tokens)
 
-    tokens = tokenizer.tokenize(k3)
-    for word in tokens:
-        if word in vocab.stoi:
-            K3.append(vocab.stoi[word])
-        else:
-            K3.append(vocab.stoi["<UNK>"])
+    tokens = tokenizer.tokenize(k2)
+    K3 = tokenizer.tokenize(tokens)
 
     K = [K1, K2, K3]
     seq_len = max([len(k) for k in K]) + 2
