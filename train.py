@@ -33,7 +33,7 @@ def pre_train(model, optimizer, train_loader, args):
     encoder, Kencoder, manager, decoder = [*model]
     encoder.train(), Kencoder.train(), manager.train(), decoder.train()
     parameters = list(encoder.parameters()) + list(Kencoder.parameters()) + \
-                 list(manager.parameters())
+                 list(manager.parameters()) + list(decoder.parameters())
     NLLLoss = nn.NLLLoss(reduction='mean', ignore_index=params.PAD)
 
     for epoch in range(args.pre_epoch):
@@ -45,7 +45,7 @@ def pre_train(model, optimizer, train_loader, args):
             optimizer.zero_grad()
             _, x = encoder(src_X)
             n_batch = src_y.size(0)
-            n_vocab = decoder.n_vocab
+            n_vocab = params.n_vocab
 			
             CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
             SEP_tokens = torch.LongTensor([params.SEP] * n_batch).unsqueeze(1).cuda()
