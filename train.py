@@ -90,6 +90,7 @@ def train(model, optimizer, train_loader, args):
             n_vocab = params.n_vocab
 			
             CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
+            SOS_tokens = torch.LongTensor([params.SOS] * n_batch).unsqueeze(1).cuda()
             SEP_tokens = torch.LongTensor([params.SEP] * n_batch).unsqueeze(1).cuda()
             src_y_ = torch.cat((CLS_tokens, src_y[:, 1:], SEP_tokens), dim=-1)
 			
@@ -103,9 +104,7 @@ def train(model, optimizer, train_loader, args):
             bow_loss = NLLLoss(k_logits, src_y[:, 1:].contiguous().view(-1))
 
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
-            output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]
-            output = torch.cat((CLS_tokens, output.unsqueeze(1)), dim=-1)
-            hidden = hidden.unsqueeze(0)
+            output = torch.cat((CLS_tokens, SOS_tokens, SEP_tokens), dim=-1)
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
                 outputs[t] = output
