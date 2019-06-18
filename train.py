@@ -130,8 +130,7 @@ def train(model, optimizer, train_loader, args):
                          bow_loss.item(), nll_loss.item()))
 
         # save models
-        if (epoch + 1) % 3 == 0:
-            save_models(model, params.all_restore)
+        save_models(model, params.all_restore)
 
 
 def main():

@@ -126,7 +126,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
     def forward(self, input, k, hidden, encoder_outputs):
         '''
         :param input:
-            word_input for current time step, in shape (B, 3)
+            word_input for current time step, in shape (B)
         :param k:
             selected knowledge in shape (B, H)
         :param hidden:
