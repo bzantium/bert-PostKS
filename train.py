@@ -130,6 +130,13 @@ def train(model, optimizer, train_loader, args):
                          loss.item(), kldiv_loss.item(),
                          bow_loss.item(), nll_loss.item()))
 
+        # save models
+        if (epoch + 1) % 3 == 0:
+            save_model(encoder, "bert-PostKS-encoder.pt")
+            save_model(Kencoder, "bert-PostKS-Kencoder.pt")
+            save_model(manager, "bert-PostKS-manager.pt")
+            save_model(decoder, "bert-PostKS-decoder.pt")
+
 
 def main():
     args = parse_arguments()
@@ -174,10 +181,10 @@ def main():
     train(model, optimizer, train_loader, args)
 
     # save final model
-    save_model(encoder, "PostKS-encoder.pt")
-    save_model(Kencoder, "PostKS-Kencoder.pt")
-    save_model(manager, "PostKS-manager.pt")
-    save_model(decoder, "PostKS-decoder.pt")
+    save_model(encoder, "bert-PostKS-encoder.pt")
+    save_model(Kencoder, "bert-PostKS-Kencoder.pt")
+    save_model(manager, "bert-PostKS-manager.pt")
+    save_model(decoder, "bert-PostKS-decoder.pt")
 
 
 if __name__ == "__main__":
