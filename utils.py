@@ -60,10 +60,10 @@ def save_models(model, filenames):
     """Save trained model."""
     if not os.path.exists(params.model_root):
         os.makedirs(params.model_root)
-    for i in range(len(models)):
-        model = model[0]
+    for i in range(len(model)):
+        net = model[0]
         filename = filenames[0]
-        torch.save(model.state_dict(), filename)
+        torch.save(net.state_dict(), filename)
         print("save pretrained model to: {}".format(filename))
 
 
