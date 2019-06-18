@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utils import gumbel_softmax
 from pytorch_pretrained_bert import BertModel
-from copy import deepcopy
 
 
 model = BertModel.from_pretrained('bert-base-uncased')
@@ -13,7 +12,7 @@ model = BertModel.from_pretrained('bert-base-uncased')
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        self.encoder = deepcopy(model)
+        self.encoder = model
 
     def forward(self, X):
         mask = (X != 0).long()
@@ -25,7 +24,7 @@ class KnowledgeEncoder(nn.Module):
     def __init__(self, n_hidden):
         super(KnowledgeEncoder, self).__init__()
         self.n_hidden = n_hidden
-        self.encoder = deepcopy(model)
+        self.encoder = model
 
     def forward(self, K):
         if len(K.shape) == 3:  # [n_batch, N, seq_len]
@@ -114,7 +113,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         super(Decoder, self).__init__()
         self.n_hidden = n_hidden
         self.n_vocab = n_vocab
-        self.embedding = deepcopy(model)
+        self.embedding = model
         self.attention = Attention(n_hidden)
         self.y_weight = nn.Linear(n_hidden, n_hidden)
         self.k_weight = nn.Linear(n_hidden, n_hidden)
