@@ -58,6 +58,7 @@ def main():
             k_i = manager(hidden, None, K)
             outputs = torch.zeros(max_len, 1, n_vocab).cuda()  # outputs: [max_len, 1, n_vocab]
             output = torch.LongTensor([params.CLS, params.SOS, params.SEP]).unsqueeze(0).cuda()
+            hidden = hidden.unsqueeze(0)
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
                 outputs[t] = output

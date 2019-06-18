@@ -105,6 +105,7 @@ def train(model, optimizer, train_loader, args):
 
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
             output = torch.cat((CLS_tokens, SOS_tokens, SEP_tokens), dim=-1)
+            hidden = hidden.unsqueeze(0)
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
                 outputs[t] = output
