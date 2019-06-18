@@ -114,7 +114,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         self.n_hidden = n_hidden
         self.n_embed = n_embed
         self.n_vocab = n_vocab
-        self.embedding = nn.embedding(n_embed)
+        self.embedding = nn.Embedding(n_embed)
         self.attention = Attention(n_hidden)
         self.y_weight = nn.Linear(n_hidden, n_hidden)
         self.k_weight = nn.Linear(n_hidden, n_hidden)
