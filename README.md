@@ -1,6 +1,8 @@
-## PostKS (Posterior Knowledge Selection)
+## bert-PostKS (Posterior Knowledge Selection)
 
-#### Pytorch implementation of [Learning to Select Knowledge for Response Generation in Dialog Systems](https://arxiv.org/pdf/1902.04911.pdf)
+#### Pytorch BERT augmented implementation of [Learning to Select Knowledge for Response Generation in Dialog Systems](https://arxiv.org/pdf/1902.04911.pdf)
+
+I replace original utterance encoder and knowledge encoder as well as decoder embedding with pretrained BERT.
 For decoder, I apply Hierarchical Gated Fusion Unit (HGFU) [Yao et al. 2017] and I only use three number of knowledges for the sake of code simplicity.
 
 <p align="center">
@@ -11,14 +13,13 @@ For decoder, I apply Hierarchical Gated Fusion Unit (HGFU) [Yao et al. 2017] and
 ## Requirement
 - pytorch
 - pytorch-nlp
-- nltk
-- nltk.download('punkt')
+- pytorch_pretrained_bert
 
 <br><br>
 ## Train model
 #### If you run train, vocab.json and trained parameters will be saved. Then you can play demo.
 ```
-$ python train.py -pre_epoch 5 -n_epoch 15 -n_batch 128
+$ python train.py -pre_epoch 5 -n_epoch 15 -n_batch 32
 ```
 
 <br><br>
