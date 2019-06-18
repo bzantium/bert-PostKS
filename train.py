@@ -64,7 +64,7 @@ def pre_train(model, optimizer, train_loader, args):
                 print("Epoch [%.1d/%.1d] Step [%.4d/%.4d]: bow_loss=%.4f" % (epoch + 1, args.pre_epoch,
                                                                              step, len(train_loader),
                                                                              bow_loss.item()))
-    save_models(model, all_restore)																			 
+    save_models(model, params.all_restore)																			 
 
 
 def train(model, optimizer, train_loader, args):
@@ -133,7 +133,7 @@ def train(model, optimizer, train_loader, args):
 
         # save models
         if (epoch + 1) % 3 == 0:
-            save_models(model, all_restore)
+            save_models(model, params.all_restore)
 
 
 def main():
@@ -173,7 +173,7 @@ def main():
     train(model, optimizer, train_loader, args)
 
     # save final model
-    save_models(model, all_restore)
+    save_models(model, params.all_restore)
 
 
 if __name__ == "__main__":
