@@ -12,7 +12,6 @@ For decoder, I apply Hierarchical Gated Fusion Unit (HGFU) [[Yao et al. 2017](ht
 <br><br>
 ## Requirement
 - pytorch
-- pytorch-nlp
 - pytorch_pretrained_bert
 
 <br><br>
