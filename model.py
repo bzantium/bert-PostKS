@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from utils import gumbel_softmax
+from copy import deepcopy
 from pytorch_pretrained_bert import BertModel
 
 
@@ -12,11 +13,12 @@ model = BertModel.from_pretrained('bert-base-uncased')
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        self.encoder = model
+        self.encoder = deepcopy(model)
 
     def forward(self, X):
         mask = (X != 0).long()
         outputs, hidden = self.encoder(X, attention_mask=mask, output_all_encoded_layers=False)
+		outputs = outputs[:, 1:-1]
         return outputs, hidden  # outputs: [n_batch, seq_len, n_hidden], # hidden: [n_batch, n_hidden]
 
 
@@ -24,7 +26,7 @@ class KnowledgeEncoder(nn.Module):
     def __init__(self, n_hidden):
         super(KnowledgeEncoder, self).__init__()
         self.n_hidden = n_hidden
-        self.encoder = model
+        self.encoder = deepcopy(model)
 
     def forward(self, K):
         if len(K.shape) == 3:  # [n_batch, N, seq_len]
@@ -116,11 +118,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         self.n_vocab = n_vocab
         self.embedding = nn.Embedding(n_vocab, n_embed)
         self.attention = Attention(n_hidden)
-        self.y_weight = nn.Linear(n_hidden, n_hidden)
-        self.k_weight = nn.Linear(n_hidden, n_hidden)
-        self.z_weight = nn.Linear(2 * n_hidden, n_hidden)
-        self.y_gru = nn.GRU(n_embed + n_hidden, n_hidden)
-        self.k_gru = nn.GRU(2 * n_hidden, n_hidden)
+        self.gru = nn.GRU(n_embed + n_hidden, n_hidden)
         self.out = nn.Linear(2 * n_hidden, n_vocab)
 
     def forward(self, input, k, hidden, encoder_outputs):
@@ -140,15 +138,9 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         attn_weights = self.attention(hidden, encoder_outputs)  # [n_batch, 1, seq_len]
         context = torch.bmm(attn_weights, encoder_outputs)  # [n_batch, 1, n_hidden]
         context = context.transpose(0, 1)  # [1, n_batch, n_hidden]
-        y_input = torch.cat((embedded, context), dim=-1)
-        k_input = torch.cat((k.unsqueeze(0), context), dim=-1)
-        y_output, y_hidden = self.y_gru(y_input, hidden)  # y_hidden: [1, n_batch, n_hidden]
-        k_output, k_hidden = self.k_gru(k_input, hidden)  # k_hidden: [1, n_batch, n_hidden]
-        t_hidden = torch.tanh(torch.cat((self.y_weight(y_hidden), self.k_weight(k_hidden)), dim=-1))
-        # t_hidden: [n_batch, 2*n_hidden]
-        r = torch.sigmoid(self.z_weight(t_hidden))  # [1, n_batch, n_hidden]
-        hidden = torch.mul(r, y_hidden) + torch.mul(1-r, k_hidden) # [1, n_batch, n_hidden]
-        output = hidden[-1]  # [n_batch, n_hidden]
+        rnn_input = torch.cat((embedded, context), dim=-1)
+        output, hidden = self.gru(rnn_input, hidden)  # hidden: [1, n_batch, n_hidden]
+		output = output.squeeze(0)
         context = context.squeeze(0)  # [n_batch, n_hidden]
         output = self.out(torch.cat((output, context), dim=1))  # [n_batch, n_vocab]
         output = F.log_softmax(output, dim=1)
