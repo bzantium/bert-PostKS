@@ -129,7 +129,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         :param k:
             selected knowledge in shape (B, H)
         :param hidden:
-            last hidden state of the decoder, in shape (B, H)
+            last hidden state of the decoder, in shape (1, B, H)
         :param encoder_outputs:
             encoder outputs in shape (B, T, H)
         :return:
