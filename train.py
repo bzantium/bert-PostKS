@@ -91,7 +91,6 @@ def train(model, optimizer, train_loader, args):
             n_vocab = params.n_vocab
 			
             CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
-            SOS_tokens = torch.LongTensor([params.SOS] * n_batch).unsqueeze(1).cuda()
             SEP_tokens = torch.LongTensor([params.SEP] * n_batch).unsqueeze(1).cuda()
             src_y_ = torch.cat((CLS_tokens, src_y[:, 1:], SEP_tokens), dim=-1)
 			
@@ -105,7 +104,7 @@ def train(model, optimizer, train_loader, args):
             bow_loss = NLLLoss(k_logits, src_y[:, 1:].contiguous().view(-1))
 
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
-            output = torch.cat((CLS_tokens, SOS_tokens, SEP_tokens), dim=-1)
+            output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]
             hidden = hidden.unsqueeze(0)
             for t in range(max_len):
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
@@ -113,7 +112,6 @@ def train(model, optimizer, train_loader, args):
                 is_teacher = random.random() < args.tfr  # teacher forcing ratio
                 top1 = output.data.max(1)[1]
                 output = tgt_y[:, t] if is_teacher else top1
-                output = torch.cat((CLS_tokens, output.unsqueeze(1), SEP_tokens), dim=-1)
 
             outputs = outputs.transpose(0, 1).contiguous()
             nll_loss = NLLLoss(outputs.view(-1, n_vocab),
