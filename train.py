@@ -112,7 +112,7 @@ def train(model, optimizer, train_loader, args):
                 is_teacher = random.random() < args.tfr  # teacher forcing ratio
                 top1 = output.data.max(1)[1]
                 output = tgt_y[:, t] if is_teacher else top1
-                output = torch.cat((CLS_tokens, output.unsqueeze(1)), dim=-1)
+                output = torch.cat((CLS_tokens, output.unsqueeze(1), SEP_tokens), dim=-1)
 
             outputs = outputs.transpose(0, 1).contiguous()
             nll_loss = NLLLoss(outputs.view(-1, n_vocab),
