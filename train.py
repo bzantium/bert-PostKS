@@ -132,10 +132,10 @@ def train(model, optimizer, train_loader, args):
 
         # save models
         if (epoch + 1) % 3 == 0:
-            save_model(encoder, "bert-PostKS-encoder.pt")
-            save_model(Kencoder, "bert-PostKS-Kencoder.pt")
-            save_model(manager, "bert-PostKS-manager.pt")
-            save_model(decoder, "bert-PostKS-decoder.pt")
+			save_model(encoder, params.encoder_restore)
+			save_model(Kencoder, params.Kencoder_restore)
+			save_model(manager, params.manager_restore)
+			save_model(decoder, params.decoder_restore)
 
 
 def main():
@@ -176,10 +176,10 @@ def main():
     train(model, optimizer, train_loader, args)
 
     # save final model
-    save_model(encoder, "bert-PostKS-encoder.pt")
-    save_model(Kencoder, "bert-PostKS-Kencoder.pt")
-    save_model(manager, "bert-PostKS-manager.pt")
-    save_model(decoder, "bert-PostKS-decoder.pt")
+    save_model(encoder, params.encoder_restore)
+    save_model(Kencoder, params.Kencoder_restore)
+    save_model(manager, params.manager_restore)
+    save_model(decoder, params.decoder_restore)
 
 
 if __name__ == "__main__":
