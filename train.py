@@ -5,7 +5,7 @@ from torch import optim
 import torch.nn as nn
 from torch.nn.utils import clip_grad_norm_
 import params
-from utils import init_model, save_model, \
+from utils import init_model, save_models, \
     load_data, get_data_loader
 from model import Encoder, KnowledgeEncoder, Decoder, Manager
 
@@ -173,7 +173,7 @@ def main():
     train(model, optimizer, train_loader, args)
 
     # save final model
-    save_model(model, all_restore)
+    save_models(model, all_restore)
 
 
 if __name__ == "__main__":
