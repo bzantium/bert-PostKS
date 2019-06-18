@@ -20,6 +20,11 @@ def main():
     manager = Manager(n_hidden, n_vocab, temperature).cuda()
     decoder = Decoder(n_hidden, n_vocab).cuda()
 
+    encoder = nn.DataParallel(encoder)
+    Kencoder = nn.DataParallel(Kencoder)
+    manager = nn.DataParallel(manager)
+    decoder = nn.DataParallel(decoder)
+
     encoder = init_model(encoder, restore=params.encoder_restore)
     Kencoder = init_model(Kencoder, restore=params.Kencoder_restore)
     manager = init_model(manager, restore=params.manager_restore)
