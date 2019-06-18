@@ -64,6 +64,7 @@ def pre_train(model, optimizer, train_loader, args):
                 print("Epoch [%.1d/%.1d] Step [%.4d/%.4d]: bow_loss=%.4f" % (epoch + 1, args.pre_epoch,
                                                                              step, len(train_loader),
                                                                              bow_loss.item()))
+	save_models(model, all_restore)
 
 
 def train(model, optimizer, train_loader, args):
@@ -132,10 +133,7 @@ def train(model, optimizer, train_loader, args):
 
         # save models
         if (epoch + 1) % 3 == 0:
-            save_model(encoder, params.encoder_restore)
-            save_model(Kencoder, params.Kencoder_restore)
-            save_model(manager, params.manager_restore)
-            save_model(decoder, params.decoder_restore)
+            save_models(model, all_restore)
 
 
 def main():
@@ -148,7 +146,6 @@ def main():
     assert torch.cuda.is_available()
 
     print("loading_data...")
-
     train_X, train_y, train_K = load_data(train_path)
     train_loader = get_data_loader(train_X, train_y, train_K, n_batch)
     print("successfully loaded")
@@ -176,10 +173,7 @@ def main():
     train(model, optimizer, train_loader, args)
 
     # save final model
-    save_model(encoder, params.encoder_restore)
-    save_model(Kencoder, params.Kencoder_restore)
-    save_model(manager, params.manager_restore)
-    save_model(decoder, params.decoder_restore)
+    save_model(model, all_restore)
 
 
 if __name__ == "__main__":
