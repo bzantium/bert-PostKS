@@ -141,7 +141,7 @@ def main():
     n_embed = params.n_embed
     n_batch = args.n_batch
     temperature = params.temperature
-    train_path = params.train_path
+    train_path = params.test_path
     assert torch.cuda.is_available()
 
     print("loading_data...")
