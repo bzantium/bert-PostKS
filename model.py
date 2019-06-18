@@ -18,7 +18,7 @@ class Encoder(nn.Module):
     def forward(self, X):
         mask = (X != 0).long()
         outputs, hidden = self.encoder(X, attention_mask=mask, output_all_encoded_layers=False)
-		outputs = outputs[:, 1:-1]
+        outputs = outputs[:, 1:-1]
         return outputs, hidden  # outputs: [n_batch, seq_len, n_hidden], # hidden: [n_batch, n_hidden]
 
 
