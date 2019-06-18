@@ -132,10 +132,10 @@ def train(model, optimizer, train_loader, args):
 
         # save models
         if (epoch + 1) % 3 == 0:
-			save_model(encoder, params.encoder_restore)
-			save_model(Kencoder, params.Kencoder_restore)
-			save_model(manager, params.manager_restore)
-			save_model(decoder, params.decoder_restore)
+            save_model(encoder, params.encoder_restore)
+            save_model(Kencoder, params.Kencoder_restore)
+            save_model(manager, params.manager_restore)
+            save_model(decoder, params.decoder_restore)
 
 
 def main():
