@@ -51,7 +51,6 @@ def evaluate(model, test_loader):
 def main():
     args = parse_arguments()
     n_vocab = params.n_vocab
-    n_embed = params.n_embed
     n_hidden = params.n_hidden
     n_batch = args.n_batch
     temperature = params.temperature
@@ -67,7 +66,7 @@ def main():
     encoder = Encoder().cuda()
     Kencoder = KnowledgeEncoder(n_hidden).cuda()
     manager = Manager(n_hidden, n_vocab, temperature).cuda()
-    decoder = Decoder(n_vocab, n_embed, n_hidden).cuda()
+    decoder = Decoder(n_hidden, n_vocab).cuda()
 
     encoder = init_model(encoder, restore=params.encoder_restore)
     Kencoder = init_model(Kencoder, restore=params.Kencoder_restore)
