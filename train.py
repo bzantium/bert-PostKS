@@ -35,7 +35,7 @@ def pre_train(model, optimizer, train_loader, args):
     parameters = list(encoder.parameters()) + list(Kencoder.parameters()) + \
                  list(manager.parameters()) + list(decoder.parameters())
     NLLLoss = nn.NLLLoss(reduction='mean', ignore_index=params.PAD)
-
+    loss = 0
     for epoch in range(args.pre_epoch):
         for step, (src_X, src_y, src_K, _) in enumerate(train_loader):
             src_X = src_X.cuda()
@@ -60,10 +60,13 @@ def pre_train(model, optimizer, train_loader, args):
             bow_loss.backward()
             clip_grad_norm_(parameters, args.grad_clip)
             optimizer.step()
+			loss += bow_loss.item()
             if step % 50 == 0:
+                loss /= 50			
                 print("Epoch [%.1d/%.1d] Step [%.4d/%.4d]: bow_loss=%.4f" % (epoch + 1, args.pre_epoch,
                                                                              step, len(train_loader),
-                                                                             bow_loss.item()))
+                                                                             loss))
+                loss = 0
     save_models(model, params.all_restore)																			 
 
 
@@ -75,6 +78,10 @@ def train(model, optimizer, train_loader, args):
     NLLLoss = nn.NLLLoss(reduction='mean', ignore_index=params.PAD)
     KLDLoss = nn.KLDivLoss(reduction='batchmean')
 
+    b_loss = 0
+    k_loss = 0
+    n_loss = 0
+    t_loss = 0	
     for epoch in range(args.n_epoch):
         for step, (src_X, src_y, src_K, tgt_y) in enumerate(train_loader):
             src_X = src_X.cuda()
@@ -121,13 +128,20 @@ def train(model, optimizer, train_loader, args):
             loss.backward()
             clip_grad_norm_(parameters, args.grad_clip)
             optimizer.step()
-
+            b_loss += bow_loss.item()
+            k_loss += kldiv_loss.item()
+            n_loss += nll_loss.item()
+            t_loss += loss.item()
             if step % 50 == 0:
+                b_loss /= 50
+                k_loss /= 50
+                n_loss /= 50
+                t_loss /= 50	
                 print("Epoch [%.2d/%.2d] Step [%.4d/%.4d]: total_loss=%.4f kldiv_loss=%.4f bow_loss=%.4f nll_loss=%.4f"
                       % (epoch + 1, args.n_epoch,
                          step, len(train_loader),
-                         loss.item(), kldiv_loss.item(),
-                         bow_loss.item(), nll_loss.item()))
+                         t_loss, k_loss,
+                         b_loss, n_loss))
 
         # save models
         save_models(model, params.all_restore)
