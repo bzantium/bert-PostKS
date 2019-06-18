@@ -140,7 +140,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         context = context.transpose(0, 1)  # [1, n_batch, n_hidden]
         rnn_input = torch.cat((embedded, context), dim=-1)
         output, hidden = self.gru(rnn_input, hidden)  # hidden: [1, n_batch, n_hidden]
-		output = output.squeeze(0)
+        output = output.squeeze(0)
         context = context.squeeze(0)  # [n_batch, n_hidden]
         output = self.out(torch.cat((output, context), dim=1))  # [n_batch, n_vocab]
         output = F.log_softmax(output, dim=1)
