@@ -30,7 +30,7 @@ def evaluate(model, test_loader):
         k_i = manager(x, None, K)
         n_batch = src_X.size(0)
         max_len = tgt_y.size(1)
-        n_vocab = decoder.n_vocab
+        n_vocab = params.n_vocab
 
         outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
         output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]

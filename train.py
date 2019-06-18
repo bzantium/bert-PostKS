@@ -87,7 +87,7 @@ def train(model, optimizer, train_loader, args):
 			
             n_batch = src_X.size(0)
             max_len = tgt_y.size(1)
-            n_vocab = decoder.n_vocab
+            n_vocab = params.n_vocab
 			
             CLS_tokens = torch.LongTensor([params.CLS] * n_batch).unsqueeze(1).cuda()
             SEP_tokens = torch.LongTensor([params.SEP] * n_batch).unsqueeze(1).cuda()
@@ -150,6 +150,11 @@ def main():
     Kencoder = KnowledgeEncoder(n_hidden).cuda()
     manager = Manager(n_hidden, n_vocab, temperature).cuda()
     decoder = Decoder(n_hidden, n_vocab).cuda()
+
+    encoder = nn.DataParallel(encoder)
+    Kencoder = nn.DataParallel(Kencoder)
+    manager = nn.DataParallel(manager)
+    decoder = nn.DataParallel(decoder)
 
     if args.restore:
         encoder = init_model(encoder, restore=params.encoder_restore)
