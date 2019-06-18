@@ -96,13 +96,8 @@ def train(model, optimizer, train_loader, args):
 			
             y = Kencoder(src_y_)
             K = Kencoder(src_K)
-            prior, posterior, k_i, k_logits = manager(x, y, K)
+            prior, posterior, k_i, _ = manager(x, y, K)
             kldiv_loss = KLDLoss(prior, posterior.detach())
-
-            seq_len = src_y.size(1) - 1
-            k_logits = k_logits.repeat(seq_len, 1, 1).transpose(0, 1).contiguous().view(-1, n_vocab)
-            bow_loss = NLLLoss(k_logits, src_y[:, 1:].contiguous().view(-1))
-
             outputs = torch.zeros(max_len, n_batch, n_vocab).cuda()
             output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]
             hidden = hidden.unsqueeze(0)
@@ -117,17 +112,16 @@ def train(model, optimizer, train_loader, args):
             nll_loss = NLLLoss(outputs.view(-1, n_vocab),
                                tgt_y.contiguous().view(-1))
 
-            loss = kldiv_loss + nll_loss + bow_loss
+            loss = kldiv_loss + nll_loss
             loss.backward()
             clip_grad_norm_(parameters, args.grad_clip)
             optimizer.step()
 
             if step % 50 == 0:
-                print("Epoch [%.2d/%.2d] Step [%.4d/%.4d]: total_loss=%.4f kldiv_loss=%.4f bow_loss=%.4f nll_loss=%.4f"
+                print("Epoch [%.2d/%.2d] Step [%.4d/%.4d]: total_loss=%.4f kldiv_loss=%.4f nll_loss=%.4f"
                       % (epoch + 1, args.n_epoch,
                          step, len(train_loader),
-                         loss.item(), kldiv_loss.item(),
-                         bow_loss.item(), nll_loss.item()))
+                         loss.item(), kldiv_loss.item(), nll_loss.item()))
 
         # save models
         save_models(model, params.all_restore)
