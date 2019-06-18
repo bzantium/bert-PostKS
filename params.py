@@ -6,6 +6,7 @@ CLS = 101
 SEP = 102
 
 n_vocab = 30522
+n_embed = 300
 n_hidden = 768
 temperature = 0.8
 

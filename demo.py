@@ -10,6 +10,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 def main():
     max_len = 50
     n_vocab = params.n_vocab
+    n_embed = params.n_embed
     n_hidden = params.n_hidden
     temperature = params.temperature
     assert torch.cuda.is_available()
@@ -18,7 +19,7 @@ def main():
     encoder = Encoder().cuda()
     Kencoder = KnowledgeEncoder(n_hidden).cuda()
     manager = Manager(n_hidden, n_vocab, temperature).cuda()
-    decoder = Decoder(n_hidden, n_vocab).cuda()
+    decoder = Decoder(n_hidden, n_embed, n_vocab).cuda()
 
     encoder = init_model(encoder, restore=params.encoder_restore)
     Kencoder = init_model(Kencoder, restore=params.Kencoder_restore)

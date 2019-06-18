@@ -138,6 +138,7 @@ def main():
     args = parse_arguments()
     n_vocab = params.n_vocab
     n_hidden = params.n_hidden
+    n_embed = params.n_embed
     n_batch = args.n_batch
     temperature = params.temperature
     train_path = params.train_path
@@ -151,7 +152,7 @@ def main():
     encoder = Encoder().cuda()
     Kencoder = KnowledgeEncoder(n_hidden).cuda()
     manager = Manager(n_hidden, n_vocab, temperature).cuda()
-    decoder = Decoder(n_hidden, n_vocab).cuda()
+    decoder = Decoder(n_hidden, n_embed, n_vocab).cuda()
 
     if args.restore:
         encoder = init_model(encoder, restore=params.encoder_restore)
