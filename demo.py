@@ -52,7 +52,10 @@ def main():
         print()
 
         while True:
-            utterance = input("you: ")
+            utterance = input("you: ")        
+            while not utterance:
+                print("Please type utterance.\n")
+                utterance = input("you: ")
             if utterance == "change knowledge" or utterance == "exit":
                 print()
                 break
