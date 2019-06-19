@@ -70,7 +70,6 @@ def main():
                 output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
                 outputs[t] = output
                 output = output.data.max(1)[1]
-                output = torch.LongTensor([params.CLS, output, params.SEP]).unsqueeze(0).cuda()
 
             outputs = outputs.max(2)[1]
 
