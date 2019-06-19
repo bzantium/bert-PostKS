@@ -142,9 +142,9 @@ def train(model, optimizer, train_loader, args):
                          step + 1, len(train_loader),
                          t_loss, k_loss, b_loss, n_loss))
                 k_loss = 0
-				n_loss = 0
-				b_loss = 0
-				t_loss = 0
+                n_loss = 0
+                b_loss = 0
+                t_loss = 0
 
         # save models
         save_models(model, params.all_restore)
