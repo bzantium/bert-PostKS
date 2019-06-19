@@ -82,13 +82,13 @@ def load_data(path):
             if "your persona:" in line:
                 if len(k) == 3:
                     continue
-                k_line = line.split("persona:")[1].strip("\n").lower()
+                k_line = line.split("persona:")[1].strip("\n")
                 k.append(k_line)
 
             elif "__SILENCE__" not in line:
                 K.append(k)
-                X_line = " ".join(line.split("\t")[0].split()[1:]).lower()
-                y_line = line.split("\t")[1].strip("\n").lower()
+                X_line = " ".join(line.split("\t")[0].split()[1:])
+                y_line = line.split("\t")[1].strip("\n")
                 X.append(X_line)
                 y.append(y_line)
 

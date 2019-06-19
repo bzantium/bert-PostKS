@@ -31,20 +31,20 @@ def main():
     while True:
         if utterance == "exit":
             break
-        k1 = input("Type first Knowledge: ").lower()
+        k1 = input("Type first Knowledge: ")
         while not k1:
             print("Please type first Knowledge.\n")
-            k1 = input("Type first Knowledge: ").lower()
+            k1 = input("Type first Knowledge: ")
 
-        k2 = input("Type second Knowledge: ").lower()
+        k2 = input("Type second Knowledge: ")
         while not k2:
             print("Please type second Knowledge.\n")
-            k2 = input("Type second Knowledge: ").lower()
+            k2 = input("Type second Knowledge: ")
 
-        k3 = input("Type third Knowledge: ").lower()
+        k3 = input("Type third Knowledge: ")
         while not k3:
             print("Please type third Knowledge.\n")
-            k3 = input("Type third Knowledge: ").lower()
+            k3 = input("Type third Knowledge: ")
 
         K = [k1, k2, k3]
         K = knowledgeToIndex(K)
@@ -52,7 +52,7 @@ def main():
         print()
 
         while True:
-            utterance = input("you: ").lower()
+            utterance = input("you: ")
             if utterance == "change knowledge" or utterance == "exit":
                 print()
                 break
