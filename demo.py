@@ -59,6 +59,8 @@ def main():
 
             tokens = tokenizer.tokenize(utterance)
             seqs = tokenizer.convert_tokens_to_ids(tokens)
+			seqs.insert(0, params.CLS)
+            seqs.append(params.SEP)
             X = torch.LongTensor(seqs).unsqueeze(0).cuda()  # X: [1, x_seq_len]
 
             encoder_outputs, hidden = encoder(X)
