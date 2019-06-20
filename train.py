@@ -90,7 +90,7 @@ def train(model, optimizer, train_loader, args):
             src_K = src_K.cuda()
             tgt_y = tgt_y.cuda()
             mask = (src_X != 0).long()
-            encoder_mask = (src_X == 0).unsqueeze(1).long()
+            encoder_mask = (src_X == 0).unsqueeze(1).byte()
 
             optimizer.zero_grad()
             encoder_outputs, hidden = encoder(src_X, mask)
