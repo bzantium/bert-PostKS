@@ -35,15 +35,16 @@ def pre_train(model, optimizer, train_loader, args):
     parameters = list(encoder.parameters()) + list(Kencoder.parameters()) + \
                  list(manager.parameters()) + list(decoder.parameters())
     NLLLoss = nn.NLLLoss(reduction='mean', ignore_index=params.PAD)
-    b_loss = 0
     for epoch in range(args.pre_epoch):
+        b_loss = 0
         for step, (src_X, src_y, src_K, _) in enumerate(train_loader):
             src_X = src_X.cuda()
             src_y = src_y.cuda()
             src_K = src_K.cuda()
+            mask = (src_X != 0).long()
 
             optimizer.zero_grad()
-            _, x = encoder(src_X)
+            _, x = encoder(src_X, mask)
             n_batch = src_y.size(0)
             n_vocab = params.n_vocab
 			
@@ -78,19 +79,21 @@ def train(model, optimizer, train_loader, args):
     NLLLoss = nn.NLLLoss(reduction='mean', ignore_index=params.PAD)
     KLDLoss = nn.KLDivLoss(reduction='batchmean')
 
-    b_loss = 0
-    k_loss = 0
-    n_loss = 0
-    t_loss = 0	
     for epoch in range(args.n_epoch):
+        b_loss = 0
+        k_loss = 0
+        n_loss = 0
+        t_loss = 0
         for step, (src_X, src_y, src_K, tgt_y) in enumerate(train_loader):
             src_X = src_X.cuda()
             src_y = src_y.cuda()
             src_K = src_K.cuda()
             tgt_y = tgt_y.cuda()
+            mask = (src_X != 0).long()
+            encoder_mask = (src_X == 0).unsqueeze(1).long()
 
             optimizer.zero_grad()
-            encoder_outputs, hidden = encoder(src_X)
+            encoder_outputs, hidden = encoder(src_X, mask)
             x = hidden
 			
             n_batch = src_X.size(0)
@@ -114,7 +117,7 @@ def train(model, optimizer, train_loader, args):
             output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]
             hidden = hidden.unsqueeze(0)
             for t in range(max_len):
-                output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
+                output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs, encoder_mask)
                 outputs[t] = output
                 is_teacher = random.random() < args.tfr  # teacher forcing ratio
                 top1 = output.data.max(1)[1]
