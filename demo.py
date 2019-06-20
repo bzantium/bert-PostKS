@@ -65,8 +65,8 @@ def main():
             seqs.insert(0, params.CLS)
             seqs.append(params.SEP)
             X = torch.LongTensor(seqs).unsqueeze(0).cuda()  # X: [1, x_seq_len]
-
-            encoder_outputs, hidden = encoder(X)
+            mask = (X != 0).long()
+            encoder_outputs, hidden = encoder(X, mask)
             k_i = manager(hidden, None, K)
             outputs = torch.zeros(max_len, 1, n_vocab).cuda()  # outputs: [max_len, 1, n_vocab]
             output = torch.LongTensor([params.SOS]).cuda()
