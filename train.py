@@ -68,7 +68,8 @@ def pre_train(model, optimizer, train_loader, args):
                                                                              step + 1, len(train_loader),
                                                                              b_loss))
                 b_loss = 0
-    save_models(model, params.all_restore)																			 
+        # save models
+        save_models(model, params.all_restore)
 
 
 def train(model, optimizer, train_loader, args):
@@ -148,7 +149,6 @@ def train(model, optimizer, train_loader, args):
                 n_loss = 0
                 b_loss = 0
                 t_loss = 0
-
         # save models
         save_models(model, params.all_restore)
 

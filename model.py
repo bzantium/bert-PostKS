@@ -93,20 +93,21 @@ class Attention(nn.Module):
         stdv = 1. / math.sqrt(self.v.size(0))
         self.v.data.uniform_(-stdv, stdv)
 
-    def forward(self, hidden, encoder_outputs, encoder_mask):  # hidden: [n_batch, n_hidden]
+    def forward(self, hidden, encoder_outputs, encoder_mask=None):  # hidden: [n_batch, n_hidden]
         seq_len = encoder_outputs.size(1)  # encoder_outputs: [n_batch, seq_len, n_hidden]
         h = hidden.repeat(seq_len, 1, 1).transpose(0, 1)  # [n_batch, seq_len, n_hidden]
         attn_weights = self.score(h, encoder_outputs, encoder_mask)  # [n_batch, 1, seq_len]
         return attn_weights
 
-    def score(self, hidden, encoder_outputs, encoder_mask):
+    def score(self, hidden, encoder_outputs, encoder_mask=None):
         # hidden: [n_batch, seq_len, n_hidden], encoder_outputs: [n_batch, seq_len, n_hidden]
         attn_scores = torch.tanh(self.attn(torch.cat((hidden, encoder_outputs), dim=-1)))
 
         # attn_scores: [n_batch, seq_len, n_hidden]
         v = self.v.repeat(encoder_outputs.size(0), 1).unsqueeze(1)  # [n_batch, 1, n_hidden]
         attn_scores = torch.bmm(v, attn_scores.transpose(1, 2))  # [n_batch, 1, seq_len]
-        attn_scores.masked_fill_(encoder_mask, -1e9)
+        if encoder_mask is not None:
+            attn_scores.masked_fill_(encoder_mask, -1e9)
         attn_weights = F.softmax(attn_scores, dim=-1)  # [n_batch, 1, seq_len]
         return attn_weights  # [n_batch, 1, seq_len]
 
@@ -122,7 +123,7 @@ class Decoder(nn.Module):  # Hierarchical Gated Fusion Unit
         self.gru = nn.GRU(n_embed + n_hidden, n_hidden)
         self.out = nn.Linear(2 * n_hidden, n_vocab)
 
-    def forward(self, input, k, hidden, encoder_outputs, encoder_mask):
+    def forward(self, input, k, hidden, encoder_outputs, encoder_mask=None):
         '''
         :param input:
             word_input for current time step, in shape (B)

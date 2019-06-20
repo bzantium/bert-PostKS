@@ -25,6 +25,7 @@ def evaluate(model, test_loader):
         tgt_y = tgt_y.cuda()
 
         encoder_outputs, hidden = encoder(src_X)
+        encoder_mask = (src_X == 0).unsqueeze(1).byte()
         x = hidden
         K = Kencoder(src_K)
         k_i = manager(x, None, K)
@@ -36,7 +37,7 @@ def evaluate(model, test_loader):
         output = torch.LongTensor([params.SOS] * n_batch).cuda()  # [n_batch]
         hidden = hidden.unsqueeze(0)
         for t in range(max_len):
-            output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs)
+            output, hidden, attn_weights = decoder(output, k_i, hidden, encoder_outputs, encoder_mask)
             outputs[t] = output
             output = output.data.max(1)[1]
 
