@@ -17,7 +17,6 @@ class Encoder(nn.Module):
 
     def forward(self, X, mask):
         outputs, hidden = self.encoder(X, attention_mask=mask, output_all_encoded_layers=False)
-        outputs = outputs[:, 1:-1]
         return outputs, hidden  # outputs: [n_batch, seq_len, n_hidden], # hidden: [n_batch, n_hidden]
 
 
@@ -106,7 +105,7 @@ class Attention(nn.Module):
 
         # attn_scores: [n_batch, seq_len, n_hidden]
         v = self.v.repeat(encoder_outputs.size(0), 1).unsqueeze(1)  # [n_batch, 1, n_hidden]
-        attn_scores = torch.bmm(v, attn_scores.transpose(1, 2))
+        attn_scores = torch.bmm(v, attn_scores.transpose(1, 2))  # [n_batch, 1, seq_len]
         attn_scores.masked_fill_(encoder_mask, -1e9)
         attn_weights = F.softmax(attn_scores, dim=-1)  # [n_batch, 1, seq_len]
         return attn_weights  # [n_batch, 1, seq_len]
